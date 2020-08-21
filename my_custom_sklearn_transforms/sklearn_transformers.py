@@ -1,6 +1,4 @@
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
 import numpy as np
 import pandas as pd
 
@@ -19,7 +17,6 @@ class DropColumns(BaseEstimator, TransformerMixin):
         return data.drop(labels=self.columns, axis='columns')
     
 class MediaNotas(BaseEstimator, TransformerMixin):
-    '''Rebece uma string para ser o nome da coluna de medias'''
     def __init__(self, nome_da_coluna):
         self.nome = nome_da_coluna
 
@@ -41,19 +38,3 @@ class MediaNotas(BaseEstimator, TransformerMixin):
         coluna_media = data.apply(self.media_notas, axis=1)
         data_c_media = data.join(coluna_media)
         return data_c_media
-    
-class ColumnsTransformerGOINGLES(BaseEstimator, TransformerMixin):
-    def fit(self, X, y=None):
-        return self
-    
-    def transform(self, X):
-        # Primeiro realizamos a cópia do dataframe 'X' de entrada
-        data = X.copy()
-        cl = ColumnTransformer([
-        ('go_median', SimpleImputer(missing_values=np.nan,strategy='median'), ['NOTA_GO']),
-        ('ingles_contant', SimpleImputer(missing_values=np.nan,strategy='most_frequent'), ['INGLES'])
-                          
-        ],remainder='drop')
-        data['NOTA_GO'] = pd.DataFrame(cl.fit_transform(data))[0]
-        data['INGLES'] = pd.DataFrame(cl.fit_transform(data))[1]
-        return data
